@@ -1,23 +1,27 @@
-# 使用 Node.js 18 作为基础镜像
-FROM node:18-alpine
+# 使用 Alpine 作为基础镜像
+FROM alpine:3.13
+
+# 使用 HTTPS 协议访问容器云调用证书安装
+RUN apk add ca-certificates
+
+# 安装 Node.js 和 npm，使用腾讯云镜像源提高下载速度
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tencent.com/g' /etc/apk/repositories \
+    && apk add --update --no-cache nodejs npm
 
 # 设置工作目录
 WORKDIR /app
 
-# 设置 npm 镜像为淘宝镜像
-RUN npm config set registry https://registry.npmmirror.com
-RUN npm config set fetch-retries 3
-RUN npm config set fetch-retry-mintimeout 60000
-RUN npm config set fetch-retry-maxtimeout 180000
+# 拷贝包管理文件
+COPY package*.json /app/
 
-# 复制 package.json 和 package-lock.json
-COPY package*.json ./
+# 设置 npm 使用腾讯云镜像源
+RUN npm config set registry https://mirrors.cloud.tencent.com/npm/
 
 # 安装依赖
-RUN npm install --no-package-lock --network-timeout 1000000
+RUN npm install
 
-# 复制源代码
-COPY . .
+# 将所有文件拷贝到工作目录
+COPY . /app
 
 # 暴露端口
 EXPOSE 80
