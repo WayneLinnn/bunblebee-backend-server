@@ -1,7 +1,7 @@
 {
   "name": "bunblebee-backend-server",
   "version": "1.0.0",
-  "description": "微信小程序后端服务",
+  "description": "Backend server for WeChat Mini Program",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -9,11 +9,11 @@
   },
   "dependencies": {
     "express": "^4.18.2",
-    "mysql2": "^3.6.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1"
+    "mysql2": "^3.9.1",
+    "dotenv": "^16.4.1",
+    "cors": "^2.8.5"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.3"
   }
 } 

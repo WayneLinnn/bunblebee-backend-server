@@ -1,4 +1,4 @@
-name: Deploy to WeiXin Cloud
+name: Deploy to WeChat CloudBase
 
 on:
   push:
@@ -9,22 +9,21 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "16"
+          node-version: "18"
 
-      - name: Install WeiXin Cloud CLI
+      - name: Install WxCloud CLI
         run: npm install -g @wxcloud/cli
 
-      - name: Login to WeiXin Cloud
+      - name: Login to WxCloud
         run: |
-          wxcloud login --appid ${{ secrets.WXAPP_ID }} --key ${{ secrets.WXAPP_KEY }}
+          wxcloud login --appid ${{ secrets.WXAPPID }} --key ${{ secrets.WXAPP_KEY }}
 
-      - name: Deploy to WeiXin Cloud
+      - name: Deploy to WxCloud
         run: |
-          wxcloud deploy --mode prod --env prod-4gv7hplz5e8dc437
+          wxcloud deploy --mode prod --env ${{ secrets.ENV_ID }}
