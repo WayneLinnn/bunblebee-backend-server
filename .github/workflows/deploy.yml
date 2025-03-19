@@ -1,0 +1,30 @@
+name: Deploy to WeiXin Cloud
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+
+      - name: Install WeiXin Cloud CLI
+        run: npm install -g @wxcloud/cli
+
+      - name: Login to WeiXin Cloud
+        run: |
+          wxcloud login --appid ${{ secrets.WXAPP_ID }} --key ${{ secrets.WXAPP_KEY }}
+
+      - name: Deploy to WeiXin Cloud
+        run: |
+          wxcloud deploy --mode prod --env prod-4gv7hplz5e8dc437
