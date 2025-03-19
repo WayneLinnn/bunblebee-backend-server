@@ -15,5 +15,8 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.3"
+  },
+  "config": {
+    "registry": "https://registry.npmmirror.com"
   }
-} 
+}
