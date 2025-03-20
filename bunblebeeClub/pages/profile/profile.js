@@ -111,7 +111,7 @@ Page({
                 },
                 path: "/auth/login",
                 header: {
-                  "X-WX-SERVICE": "bunblebee",
+                  "X-WX-SERVICE": "bunblebee-back",
                   "content-type": "application/json",
                 },
                 method: "POST",
@@ -196,7 +196,7 @@ Page({
       },
       path: "/user/bind-phone",
       header: {
-        "X-WX-SERVICE": "bunblebee",
+        "X-WX-SERVICE": "bunblebee-back",
         Authorization: `Bearer ${token}`,
         "content-type": "application/json",
       },
@@ -208,7 +208,7 @@ Page({
         if (result.data.success) {
           // 更新本地存储的用户信息
           const userInfo = wx.getStorageSync("userInfo");
-          userInfo.phone = result.data.phone;
+          userInfo.phone = result.data.data.phone;
           wx.setStorageSync("userInfo", userInfo);
 
           this.setData({

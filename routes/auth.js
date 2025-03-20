@@ -14,6 +14,9 @@ const JWT_SECRET = "your-jwt-secret-key"; // 建议使用环境变量存储
 // 获取微信用户 openid
 async function getWxOpenid(code) {
   try {
+    console.log("Requesting openid with code:", code);
+    console.log("Using AppID:", WX_APPID);
+
     const response = await axios.get(
       "https://api.weixin.qq.com/sns/jscode2session",
       {
@@ -25,19 +28,33 @@ async function getWxOpenid(code) {
         },
       }
     );
+
+    console.log("WeChat API response:", response.data);
+
+    if (response.data.errcode) {
+      throw new Error(`WeChat API error: ${response.data.errmsg}`);
+    }
+
     return response.data.openid;
   } catch (error) {
-    console.error("获取openid失败:", error);
-    throw new Error("获取openid失败");
+    console.error("获取openid失败:", error.response?.data || error.message);
+    throw new Error(
+      "获取openid失败: " + (error.response?.data?.errmsg || error.message)
+    );
   }
 }
 
 // 微信登录
 router.post("/login", async (req, res) => {
   try {
+    console.log("Received login request:", req.body);
     const { code, userInfo } = req.body;
 
     if (!code || !userInfo) {
+      console.log("Missing required parameters:", {
+        code: !!code,
+        userInfo: !!userInfo,
+      });
       return res.status(400).json({
         success: false,
         message: "缺少必要参数",
@@ -45,9 +62,12 @@ router.post("/login", async (req, res) => {
     }
 
     // 获取openid
+    console.log("Getting openid...");
     const openid = await getWxOpenid(code);
+    console.log("Got openid:", openid);
 
     // 查询或创建用户
+    console.log("Checking user in database...");
     const [user] = await req.app.locals.db.query(
       "SELECT * FROM users WHERE openid = ?",
       [openid]
@@ -55,32 +75,38 @@ router.post("/login", async (req, res) => {
 
     let userId;
     if (user.length === 0) {
+      console.log("Creating new user...");
       // 创建新用户
       const [result] = await req.app.locals.db.query(
         "INSERT INTO users (openid, nickname, avatar_url, gender) VALUES (?, ?, ?, ?)",
-        [openid, userInfo.nickName, userInfo.avatarUrl, userInfo.gender]
+        [openid, userInfo.nickname, userInfo.avatar_url, userInfo.gender]
       );
       userId = result.insertId;
+      console.log("New user created with ID:", userId);
     } else {
       userId = user[0].id;
+      console.log("Updating existing user:", userId);
       // 更新用户信息
       await req.app.locals.db.query(
         "UPDATE users SET nickname = ?, avatar_url = ?, gender = ? WHERE id = ?",
-        [userInfo.nickName, userInfo.avatarUrl, userInfo.gender, userId]
+        [userInfo.nickname, userInfo.avatar_url, userInfo.gender, userId]
       );
     }
 
     // 生成 JWT token
+    console.log("Generating JWT token...");
     const token = jwt.sign({ userId, openid }, JWT_SECRET, {
       expiresIn: "30d",
     });
 
     // 获取用户完整信息
+    console.log("Getting user info...");
     const [userData] = await req.app.locals.db.query(
       "SELECT id, nickname, avatar_url, gender, phone FROM users WHERE id = ?",
       [userId]
     );
 
+    console.log("Login successful for user:", userData[0]);
     res.json({
       success: true,
       data: {
@@ -92,7 +118,7 @@ router.post("/login", async (req, res) => {
     console.error("登录失败:", error);
     res.status(500).json({
       success: false,
-      message: "登录失败",
+      message: "登录失败: " + error.message,
     });
   }
 });
@@ -100,10 +126,15 @@ router.post("/login", async (req, res) => {
 // 手机号绑定
 router.post("/bind-phone", async (req, res) => {
   try {
+    console.log("Received bind phone request:", req.body);
     const { cloudID } = req.body;
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token || !cloudID) {
+      console.log("Missing required parameters:", {
+        token: !!token,
+        cloudID: !!cloudID,
+      });
       return res.status(400).json({
         success: false,
         message: "缺少必要参数",
@@ -111,21 +142,27 @@ router.post("/bind-phone", async (req, res) => {
     }
 
     // 验证 token
+    console.log("Verifying token...");
     const decoded = await jwtVerify(token, JWT_SECRET);
     const userId = decoded.userId;
+    console.log("Token verified for user:", userId);
 
     // 使用微信云托管解析手机号
+    console.log("Getting phone number from cloudID...");
     const { phoneNumber } =
       await req.app.locals.wx.cloud.openapi.security.getPhoneNumber({
         code: cloudID,
       });
+    console.log("Got phone number:", phoneNumber);
 
     // 更新用户手机号
+    console.log("Updating user phone number...");
     await req.app.locals.db.query("UPDATE users SET phone = ? WHERE id = ?", [
       phoneNumber,
       userId,
     ]);
 
+    console.log("Phone binding successful");
     res.json({
       success: true,
       data: {
@@ -136,7 +173,7 @@ router.post("/bind-phone", async (req, res) => {
     console.error("绑定手机号失败:", error);
     res.status(500).json({
       success: false,
-      message: "绑定手机号失败",
+      message: "绑定手机号失败: " + error.message,
     });
   }
 });

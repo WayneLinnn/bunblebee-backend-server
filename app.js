@@ -28,6 +28,16 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
+// 检查数据库连接
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error("Database connection error:", err);
+  } else {
+    console.log("Database connected successfully");
+    connection.release();
+  }
+});
+
 // 将数据库连接池添加到 app.locals
 app.locals.db = pool.promise();
 
