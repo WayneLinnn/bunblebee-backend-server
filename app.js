@@ -101,7 +101,7 @@ sequelize
   .authenticate()
   .then(() => {
     console.log("Connection has been established successfully.");
-    return sequelize.sync(); // 同步模型到数据库
+    // return sequelize.sync(); // 同步模型到数据库
   })
   .then(() => {
     console.log("Database synchronized successfully.");
