@@ -51,10 +51,13 @@ async function getWxOpenid(code) {
 }
 
 // 微信登录
-router.post("/wx-login", async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
-    const { code } = req.body;
-    console.log("Received login request with code:", code);
+    const { code, userInfo } = req.body;
+    console.log("Received login request:", {
+      code,
+      userInfo: userInfo ? "已提供" : "未提供",
+    });
     console.log("Using WX_APPID:", process.env.WX_APPID);
 
     if (!code) {
@@ -75,37 +78,67 @@ router.post("/wx-login", async (req, res) => {
       });
     }
 
-    // 请求微信接口获取openid
-    const response = await axios.get(
-      `https://api.weixin.qq.com/sns/jscode2session?appid=${process.env.WX_APPID}&secret=${process.env.WX_SECRET}&js_code=${code}&grant_type=authorization_code`
+    // 获取openid
+    console.log("Getting openid...");
+    const openid = await getWxOpenid(code);
+    console.log("Got openid:", openid);
+
+    // 查询或创建用户
+    console.log("Checking user in database...");
+    const [user] = await req.app.locals.db.query(
+      "SELECT * FROM users WHERE openid = ?",
+      [openid]
     );
 
-    console.log("WeChat API response:", response.data);
-
-    if (response.data.errcode) {
-      console.error("WeChat API error:", response.data);
-      return res.status(400).json({
-        success: false,
-        message: `获取openid失败: ${response.data.errmsg}`,
-      });
+    let userId;
+    if (user.length === 0) {
+      console.log("Creating new user...");
+      // 创建新用户
+      const [result] = await req.app.locals.db.query(
+        "INSERT INTO users (openid, nickname, avatar_url, gender) VALUES (?, ?, ?, ?)",
+        [
+          openid,
+          userInfo?.nickName || "微信用户",
+          userInfo?.avatarUrl || "",
+          userInfo?.gender || 0,
+        ]
+      );
+      userId = result.insertId;
+      console.log("New user created with ID:", userId);
+    } else {
+      userId = user[0].id;
+      console.log("Updating existing user:", userId);
+      // 更新用户信息
+      await req.app.locals.db.query(
+        "UPDATE users SET nickname = ?, avatar_url = ?, gender = ? WHERE id = ?",
+        [
+          userInfo?.nickName || "微信用户",
+          userInfo?.avatarUrl || "",
+          userInfo?.gender || 0,
+          userId,
+        ]
+      );
     }
 
-    const { openid } = response.data;
-    console.log("Successfully got openid:", openid);
+    // 生成 JWT token
+    console.log("Generating JWT token...");
+    const token = jwt.sign({ userId, openid }, JWT_SECRET, {
+      expiresIn: "30d",
+    });
 
-    // 生成JWT token
-    const token = jwt.sign(
-      { openid },
-      process.env.JWT_SECRET || "0093fd72356299b864ca022824b5487f",
-      { expiresIn: "30d" }
+    // 获取用户完整信息
+    console.log("Getting user info...");
+    const [userData] = await req.app.locals.db.query(
+      "SELECT id, nickname, avatar_url, gender, phone FROM users WHERE id = ?",
+      [userId]
     );
 
-    // 返回token和openid
+    console.log("Login successful for user:", userData[0]);
     res.json({
       success: true,
       data: {
         token,
-        openid,
+        userInfo: userData[0],
       },
     });
   } catch (error) {
