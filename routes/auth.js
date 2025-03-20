@@ -6,10 +6,9 @@ const { promisify } = require("util");
 const jwtVerify = promisify(jwt.verify);
 
 // 微信小程序配置
-const WX_APPID = "wx5b89b5f779f7991a";
-const WX_SECRET =
-  "AAQ9G7sEAAABAAAAAABR+kavYvy0X9H/j13MZyAAAAAraAdzKm8i8JwFJ68cDOJBtIHsmv3F8e00LCv7f+tYvvO8llGSXKzvv5bROCiOVue6NNuq8qxEMtFPLZe0V56nvQFhBsJFJzW+QUxyDq/vnXYsLxfkFrGvhE1H6uugbcamOVACFMvdNnkAtZGh1mtCICPle4/W";
-const JWT_SECRET = "your-jwt-secret-key"; // 建议使用环境变量存储
+const WX_APPID = process.env.WX_APPID;
+const WX_SECRET = process.env.WX_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // 获取微信用户 openid
 async function getWxOpenid(code) {
