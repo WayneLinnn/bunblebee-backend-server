@@ -2,6 +2,7 @@ const express = require("express");
 const mysql = require("mysql2");
 const cors = require("cors");
 require("dotenv").config();
+const { Sequelize } = require("sequelize");
 
 const app = express();
 
@@ -89,3 +90,22 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Database host: ${process.env.DB_HOST || "10.41.111.100"}`);
 });
+
+const sequelize = new Sequelize("bunblebee", "root", "Linfeng19960110", {
+  host: "10.41.111.100",
+  dialect: "mysql",
+});
+
+// 自动执行迁移
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("Connection has been established successfully.");
+    return sequelize.sync(); // 同步模型到数据库
+  })
+  .then(() => {
+    console.log("Database synchronized successfully.");
+  })
+  .catch((err) => {
+    console.error("Unable to connect to the database:", err);
+  });

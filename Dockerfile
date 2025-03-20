@@ -27,4 +27,4 @@ COPY . /app
 EXPOSE 80
 
 # 启动应用
-CMD ["npm", "start"] 
+CMD ["sh", "-c", "npx sequelize-cli db:migrate && npm start"] 
