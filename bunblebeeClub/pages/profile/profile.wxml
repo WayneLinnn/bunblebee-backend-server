@@ -1,0 +1,43 @@
+<!--pages/profile/profile.wxml-->
+<view class="container">
+  <!-- 未登录状态 -->
+  <view class="profile-section" wx:if="{{!isLoggedIn}}">
+    <view class="login-prompt">
+      <text class="login-text">请登录使用更多功能</text>
+      <button class="login-btn" bindtap="handleLogin">微信登录</button>
+    </view>
+  </view>
+
+  <!-- 已登录状态 -->
+  <view class="profile-section" wx:else>
+    <view class="user-info">
+      <view class="avatar-placeholder"></view>
+      <view class="user-details">
+        <text class="nickname">{{userInfo.nickname || '微信用户'}}</text>
+        <text class="phone" wx:if="{{userInfo.phone}}">{{userInfo.phone}}</text>
+        <button class="bind-phone" wx:else open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">绑定手机号</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能列表 -->
+  <view class="function-list">
+    <view class="function-item" bindtap="navigateToMyBookings">
+      <text class="function-title">我的预订</text>
+      <text class="function-arrow">></text>
+    </view>
+    <view class="function-item" bindtap="navigateToMyCourses">
+      <text class="function-title">我的课程</text>
+      <text class="function-arrow">></text>
+    </view>
+    <view class="function-item" bindtap="navigateToMyAchievements">
+      <text class="function-title">我的成就</text>
+      <text class="function-arrow">></text>
+    </view>
+  </view>
+
+  <!-- 退出登录 -->
+  <view class="logout-section" wx:if="{{isLoggedIn}}">
+    <button class="logout-btn" bindtap="handleLogout">退出登录</button>
+  </view>
+</view>

@@ -28,8 +28,14 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
-// 将 pool.promise() 转换为全局变量以便重用
-const promisePool = pool.promise();
+// 将数据库连接池添加到 app.locals
+app.locals.db = pool.promise();
+
+// 导入路由
+const authRoutes = require("./routes/auth");
+
+// 注册路由
+app.use("/auth", authRoutes);
 
 // 欢迎页面
 app.get("/", (req, res) => {
@@ -44,13 +50,13 @@ app.get("/", (req, res) => {
 app.get("/test-db", async (req, res) => {
   try {
     // 测试连接
-    const [result] = await promisePool.query("SELECT 1 + 1 AS solution");
+    const [result] = await app.locals.db.query("SELECT 1 + 1 AS solution");
 
     // 获取数据库版本信息
-    const [version] = await promisePool.query("SELECT VERSION() as version");
+    const [version] = await app.locals.db.query("SELECT VERSION() as version");
 
     // 获取当前数据库名
-    const [database] = await promisePool.query(
+    const [database] = await app.locals.db.query(
       "SELECT DATABASE() as database_name"
     );
 

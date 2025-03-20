@@ -1,0 +1,35 @@
+<view class="container">
+  <!-- 课程分类选项卡 -->
+  <view class="tabs">
+    <view 
+      wx:for="{{categories}}" 
+      wx:key="id" 
+      class="tab-item {{currentCategory === item.id ? 'active' : ''}}"
+      bindtap="switchCategory"
+      data-id="{{item.id}}"
+    >
+      {{item.name}}
+    </view>
+  </view>
+
+  <!-- 课程列表 -->
+  <view class="course-list">
+    <view class="course-item" wx:for="{{courses}}" wx:key="id" bindtap="navigateToCourseDetail" data-id="{{item.id}}">
+      <view class="course-image"></view>
+      <view class="course-info">
+        <view class="course-header">
+          <text class="course-name">{{item.name}}</text>
+          <text class="course-price">¥{{item.price}}</text>
+        </view>
+        <view class="course-desc">{{item.description}}</view>
+        <view class="course-meta">
+          <text class="course-coach">教练: {{item.coach}}</text>
+          <text class="course-time">{{item.duration}}分钟/节</text>
+        </view>
+        <view class="course-tags">
+          <text class="tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 

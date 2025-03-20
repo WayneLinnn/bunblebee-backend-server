@@ -1,0 +1,67 @@
+<!--index.wxml-->
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <!-- 轮播图部分 -->
+    <swiper class="banner" indicator-dots="{{true}}" autoplay="{{true}}" interval="{{3000}}" duration="{{500}}">
+      <swiper-item wx:for="{{banners}}" wx:key="id">
+        <view class="banner-item"></view>
+      </swiper-item>
+    </swiper>
+
+    <!-- 功能导航区 -->
+    <view class="nav-section">
+      <view class="nav-item" bindtap="navigateToCourses">
+        <view class="nav-icon course-icon"></view>
+        <text>课程报名</text>
+      </view>
+      <view class="nav-item" bindtap="navigateToFieldBooking">
+        <view class="nav-icon field-icon"></view>
+        <text>场地预订</text>
+      </view>
+      <view class="nav-item" bindtap="navigateToNews">
+        <view class="nav-icon news-icon"></view>
+        <text>俱乐部动态</text>
+      </view>
+      <view class="nav-item" bindtap="navigateToCoaches">
+        <view class="nav-icon coach-icon"></view>
+        <text>教练团队</text>
+      </view>
+    </view>
+
+    <!-- 最新课程推荐 -->
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">热门课程</text>
+        <text class="section-more" bindtap="navigateToCourses">查看更多</text>
+      </view>
+      <scroll-view scroll-x class="course-scroll">
+        <view class="course-list">
+          <view class="course-card" wx:for="{{courses}}" wx:key="id" bindtap="navigateToCourseDetail" data-id="{{item.id}}">
+            <view class="course-image"></view>
+            <view class="course-info">
+              <text class="course-name">{{item.name}}</text>
+              <text class="course-price">¥{{item.price}}</text>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 俱乐部新闻 -->
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">最新动态</text>
+        <text class="section-more" bindtap="navigateToNews">更多</text>
+      </view>
+      <view class="news-list">
+        <view class="news-item" wx:for="{{news}}" wx:key="id" bindtap="navigateToNewsDetail" data-id="{{item.id}}">
+          <view class="news-image"></view>
+          <view class="news-content">
+            <text class="news-title">{{item.title}}</text>
+            <text class="news-date">{{item.date}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>
