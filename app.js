@@ -1,7 +1,14 @@
+require("dotenv").config();
 const express = require("express");
 const mysql = require("mysql2");
 const cors = require("cors");
-require("dotenv").config();
+
+// 打印环境变量，用于调试
+console.log("Environment variables:", {
+  WX_APPID: process.env.WX_APPID,
+  DB_HOST: process.env.DB_HOST,
+  NODE_ENV: process.env.NODE_ENV,
+});
 
 const app = express();
 
@@ -53,6 +60,10 @@ app.get("/", (req, res) => {
     message: "Welcome to Bunblebee Backend Server",
     status: "running",
     timestamp: new Date().toISOString(),
+    config: {
+      wxAppId: process.env.WX_APPID,
+      dbHost: process.env.DB_HOST,
+    },
   });
 });
 
@@ -97,6 +108,10 @@ app.get("/health", (req, res) => {
     timestamp: new Date().toISOString(),
     service: "bunblebee-backend",
     environment: process.env.NODE_ENV || "development",
+    config: {
+      wxAppId: process.env.WX_APPID,
+      dbHost: process.env.DB_HOST,
+    },
   });
 });
 
@@ -104,4 +119,5 @@ const PORT = process.env.PORT || 80;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Database host: ${process.env.DB_HOST || "10.41.111.100"}`);
+  console.log(`WX_APPID: ${process.env.WX_APPID}`);
 });

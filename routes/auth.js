@@ -10,6 +10,13 @@ const WX_APPID = process.env.WX_APPID;
 const WX_SECRET = process.env.WX_SECRET;
 const JWT_SECRET = process.env.JWT_SECRET;
 
+// 打印配置信息
+console.log("Auth route configuration:", {
+  WX_APPID: process.env.WX_APPID,
+  WX_SECRET: process.env.WX_SECRET ? "已设置" : "未设置",
+  JWT_SECRET: process.env.JWT_SECRET ? "已设置" : "未设置",
+});
+
 // 获取微信用户 openid
 async function getWxOpenid(code) {
   try {
@@ -44,80 +51,68 @@ async function getWxOpenid(code) {
 }
 
 // 微信登录
-router.post("/login", async (req, res) => {
+router.post("/wx-login", async (req, res) => {
   try {
-    console.log("Received login request:", req.body);
-    const { code, userInfo } = req.body;
+    const { code } = req.body;
+    console.log("Received login request with code:", code);
+    console.log("Using WX_APPID:", process.env.WX_APPID);
 
-    if (!code || !userInfo) {
-      console.log("Missing required parameters:", {
-        code: !!code,
-        userInfo: !!userInfo,
-      });
+    if (!code) {
       return res.status(400).json({
         success: false,
-        message: "缺少必要参数",
+        message: "缺少登录码",
       });
     }
 
-    // 获取openid
-    console.log("Getting openid...");
-    const openid = await getWxOpenid(code);
-    console.log("Got openid:", openid);
-
-    // 查询或创建用户
-    console.log("Checking user in database...");
-    const [user] = await req.app.locals.db.query(
-      "SELECT * FROM users WHERE openid = ?",
-      [openid]
-    );
-
-    let userId;
-    if (user.length === 0) {
-      console.log("Creating new user...");
-      // 创建新用户
-      const [result] = await req.app.locals.db.query(
-        "INSERT INTO users (openid, nickname, avatar_url, gender) VALUES (?, ?, ?, ?)",
-        [openid, userInfo.nickname, userInfo.avatar_url, userInfo.gender]
-      );
-      userId = result.insertId;
-      console.log("New user created with ID:", userId);
-    } else {
-      userId = user[0].id;
-      console.log("Updating existing user:", userId);
-      // 更新用户信息
-      await req.app.locals.db.query(
-        "UPDATE users SET nickname = ?, avatar_url = ?, gender = ? WHERE id = ?",
-        [userInfo.nickname, userInfo.avatar_url, userInfo.gender, userId]
-      );
+    if (!process.env.WX_APPID || !process.env.WX_SECRET) {
+      console.error("Missing WeChat configuration:", {
+        WX_APPID: process.env.WX_APPID,
+        WX_SECRET: process.env.WX_SECRET ? "已设置" : "未设置",
+      });
+      return res.status(500).json({
+        success: false,
+        message: "服务器配置错误：缺少微信配置",
+      });
     }
 
-    // 生成 JWT token
-    console.log("Generating JWT token...");
-    const token = jwt.sign({ userId, openid }, JWT_SECRET, {
-      expiresIn: "30d",
-    });
-
-    // 获取用户完整信息
-    console.log("Getting user info...");
-    const [userData] = await req.app.locals.db.query(
-      "SELECT id, nickname, avatar_url, gender, phone FROM users WHERE id = ?",
-      [userId]
+    // 请求微信接口获取openid
+    const response = await axios.get(
+      `https://api.weixin.qq.com/sns/jscode2session?appid=${process.env.WX_APPID}&secret=${process.env.WX_SECRET}&js_code=${code}&grant_type=authorization_code`
     );
 
-    console.log("Login successful for user:", userData[0]);
+    console.log("WeChat API response:", response.data);
+
+    if (response.data.errcode) {
+      console.error("WeChat API error:", response.data);
+      return res.status(400).json({
+        success: false,
+        message: `获取openid失败: ${response.data.errmsg}`,
+      });
+    }
+
+    const { openid } = response.data;
+    console.log("Successfully got openid:", openid);
+
+    // 生成JWT token
+    const token = jwt.sign(
+      { openid },
+      process.env.JWT_SECRET || "0093fd72356299b864ca022824b5487f",
+      { expiresIn: "30d" }
+    );
+
+    // 返回token和openid
     res.json({
       success: true,
       data: {
         token,
-        userInfo: userData[0],
+        openid,
       },
     });
   } catch (error) {
-    console.error("登录失败:", error);
+    console.error("Login error:", error);
     res.status(500).json({
       success: false,
-      message: "登录失败: " + error.message,
+      message: `登录失败: ${error.message}`,
     });
   }
 });
