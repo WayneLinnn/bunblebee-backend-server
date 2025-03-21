@@ -50,14 +50,12 @@ async function getWxOpenid(code) {
   }
 }
 
-// 微信登录
-router.post("/login", async (req, res) => {
+// 处理登录的通用函数
+async function handleLogin(req, res) {
   try {
     const { code, userInfo } = req.body;
-    console.log("Received login request:", {
-      code,
-      userInfo: userInfo ? "已提供" : "未提供",
-    });
+    console.log("Received login request with code:", code);
+    console.log("User info:", userInfo);
     console.log("Using WX_APPID:", process.env.WX_APPID);
 
     if (!code) {
@@ -79,12 +77,10 @@ router.post("/login", async (req, res) => {
     }
 
     // 获取openid
-    console.log("Getting openid...");
     const openid = await getWxOpenid(code);
-    console.log("Got openid:", openid);
+    console.log("Successfully got openid:", openid);
 
     // 查询或创建用户
-    console.log("Checking user in database...");
     const [user] = await req.app.locals.db.query(
       "SELECT * FROM users WHERE openid = ?",
       [openid]
@@ -92,48 +88,35 @@ router.post("/login", async (req, res) => {
 
     let userId;
     if (user.length === 0) {
-      console.log("Creating new user...");
       // 创建新用户
       const [result] = await req.app.locals.db.query(
         "INSERT INTO users (openid, nickname, avatar_url, gender) VALUES (?, ?, ?, ?)",
-        [
-          openid,
-          userInfo?.nickName || "微信用户",
-          userInfo?.avatarUrl || "",
-          userInfo?.gender || 0,
-        ]
+        [openid, userInfo.nickName, userInfo.avatarUrl, userInfo.gender]
       );
       userId = result.insertId;
-      console.log("New user created with ID:", userId);
     } else {
       userId = user[0].id;
-      console.log("Updating existing user:", userId);
       // 更新用户信息
       await req.app.locals.db.query(
         "UPDATE users SET nickname = ?, avatar_url = ?, gender = ? WHERE id = ?",
-        [
-          userInfo?.nickName || "微信用户",
-          userInfo?.avatarUrl || "",
-          userInfo?.gender || 0,
-          userId,
-        ]
+        [userInfo.nickName, userInfo.avatarUrl, userInfo.gender, userId]
       );
     }
 
-    // 生成 JWT token
-    console.log("Generating JWT token...");
-    const token = jwt.sign({ userId, openid }, JWT_SECRET, {
-      expiresIn: "30d",
-    });
+    // 生成JWT token
+    const token = jwt.sign(
+      { userId, openid },
+      process.env.JWT_SECRET || "0093fd72356299b864ca022824b5487f",
+      { expiresIn: "30d" }
+    );
 
     // 获取用户完整信息
-    console.log("Getting user info...");
     const [userData] = await req.app.locals.db.query(
       "SELECT id, nickname, avatar_url, gender, phone FROM users WHERE id = ?",
       [userId]
     );
 
-    console.log("Login successful for user:", userData[0]);
+    // 返回token和用户信息
     res.json({
       success: true,
       data: {
@@ -148,7 +131,11 @@ router.post("/login", async (req, res) => {
       message: `登录失败: ${error.message}`,
     });
   }
-});
+}
+
+// 支持两种路径的登录接口
+router.post("/login", handleLogin);
+router.post("/wx-login", handleLogin);
 
 // 手机号绑定
 router.post("/bind-phone", async (req, res) => {
