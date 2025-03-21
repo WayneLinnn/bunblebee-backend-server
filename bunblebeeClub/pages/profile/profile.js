@@ -73,100 +73,77 @@ Page({
   },
 
   handleLogin() {
-    wx.showLoading({
-      title: "登录中...",
-    });
-
-    // 获取用户信息
     wx.getUserProfile({
       desc: "用于完善会员资料",
-      success: (res) => {
-        const userInfo = res.userInfo;
-        console.log("获取到的用户信息:", userInfo);
-
+      success: (userInfo) => {
+        console.log("获取用户信息成功:", userInfo);
         // 获取登录code
         wx.login({
-          success: (loginRes) => {
-            if (loginRes.code) {
-              console.log("获取到的登录code:", loginRes.code);
-
-              // 构造登录请求数据
-              const loginData = {
-                code: loginRes.code,
+          success: (res) => {
+            console.log("获取登录code成功:", res.code);
+            // 调用登录接口
+            wx.cloud.callContainer({
+              path: "/auth/wx-login",
+              method: "POST",
+              header: {
+                "X-WX-SERVICE": "bunblebee-back",
+                "content-type": "application/json",
+              },
+              data: {
+                code: res.code,
                 userInfo: {
-                  nickname: userInfo.nickName,
-                  avatar_url: userInfo.avatarUrl,
-                  gender: userInfo.gender,
-                  country: userInfo.country,
-                  province: userInfo.province,
-                  city: userInfo.city,
-                  language: userInfo.language,
+                  nickname: userInfo.userInfo.nickName,
+                  avatar_url: userInfo.userInfo.avatarUrl,
+                  gender: userInfo.userInfo.gender,
+                  country: userInfo.userInfo.country,
+                  province: userInfo.userInfo.province,
+                  city: userInfo.userInfo.city,
+                  language: userInfo.userInfo.language,
                 },
-              };
-
-              // 调用云托管登录接口
-              wx.cloud.callContainer({
-                config: {
-                  env: "prod-4gv7hplz5e8dc437",
-                },
-                path: "/auth/login",
-                header: {
-                  "X-WX-SERVICE": "bunblebee-back",
-                  "content-type": "application/json",
-                },
-                method: "POST",
-                data: loginData,
-                success: (result) => {
-                  console.log("登录接口返回:", result.data);
-
-                  if (result.data.success) {
-                    // 保存token和用户信息
-                    wx.setStorageSync("token", result.data.data.token);
-                    wx.setStorageSync("userInfo", result.data.data.userInfo);
-
-                    this.setData({
-                      isLoggedIn: true,
-                      userInfo: result.data.data.userInfo,
-                    });
-
-                    wx.showToast({
-                      title: "登录成功",
-                      icon: "success",
-                    });
-                  } else {
-                    wx.showToast({
-                      title: result.data.message || "登录失败",
-                      icon: "error",
-                    });
-                  }
-                },
-                fail: (error) => {
-                  console.error("登录失败:", error);
-                  wx.showToast({
-                    title: "登录失败",
-                    icon: "error",
+              },
+              success: (result) => {
+                console.log("登录成功:", result);
+                if (result.data.success) {
+                  // 保存token和用户信息
+                  wx.setStorageSync("token", result.data.data.token);
+                  wx.setStorageSync("userInfo", userInfo.userInfo);
+                  this.setData({
+                    isLoggedIn: true,
+                    userInfo: userInfo.userInfo,
                   });
-                },
-                complete: () => {
-                  wx.hideLoading();
-                },
-              });
-            }
+                  wx.showToast({
+                    title: "登录成功",
+                    icon: "success",
+                  });
+                } else {
+                  wx.showToast({
+                    title: result.data.message || "登录失败",
+                    icon: "none",
+                  });
+                }
+              },
+              fail: (error) => {
+                console.error("登录失败:", error);
+                wx.showToast({
+                  title: "登录失败",
+                  icon: "none",
+                });
+              },
+            });
           },
           fail: (error) => {
-            console.error("获取code失败:", error);
-            wx.hideLoading();
+            console.error("获取登录code失败:", error);
             wx.showToast({
-              title: "登录失败",
-              icon: "error",
+              title: "获取登录code失败",
+              icon: "none",
             });
           },
         });
       },
-      fail: () => {
-        wx.hideLoading();
+      fail: (error) => {
+        console.error("获取用户信息失败:", error);
         wx.showToast({
-          title: "用户取消授权",
+          title: "获取用户信息失败",
           icon: "none",
         });
       },

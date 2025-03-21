@@ -1,8 +1,8 @@
 # 使用 Alpine 作为基础镜像
-FROM alpine:3.18
+FROM alpine:3.13
 
 # 使用 HTTPS 协议访问容器云调用证书安装
-RUN apk add --no-cache ca-certificates
+RUN apk add ca-certificates
 
 # 安装 Node.js 和 npm，使用腾讯云镜像源提高下载速度
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tencent.com/g' /etc/apk/repositories \
