@@ -50,9 +50,15 @@ app.locals.db = pool.promise();
 
 // 导入路由
 const authRoutes = require("./routes/auth");
+const coursesRoutes = require("./routes/courses");
+const fieldsRoutes = require("./routes/fields");
+const achievementsRoutes = require("./routes/achievements");
 
 // 注册路由
 app.use("/auth", authRoutes);
+app.use("/courses", coursesRoutes);
+app.use("/fields", fieldsRoutes);
+app.use("/achievements", achievementsRoutes);
 
 // 欢迎页面
 app.get("/", (req, res) => {

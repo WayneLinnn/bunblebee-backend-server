@@ -91,15 +91,6 @@ Page({
               },
               data: {
                 code: res.code,
-                userInfo: {
-                  nickname: userInfo.userInfo.nickName,
-                  avatar_url: userInfo.userInfo.avatarUrl,
-                  gender: userInfo.userInfo.gender,
-                  country: userInfo.userInfo.country,
-                  province: userInfo.userInfo.province,
-                  city: userInfo.userInfo.city,
-                  language: userInfo.userInfo.language,
-                },
               },
               success: (result) => {
                 console.log("登录成功:", result);
