@@ -83,7 +83,7 @@ router.post("/wx-login", async (req, res) => {
 
     // 查询用户是否已存在
     const [existingUser] = await req.app.locals.db.query(
-      "SELECT * FROM users WHERE open_id = ?",
+      "SELECT * FROM users WHERE openid = ?",
       [openid]
     );
 
@@ -91,7 +91,7 @@ router.post("/wx-login", async (req, res) => {
     if (existingUser.length === 0) {
       // 创建新用户
       const [result] = await req.app.locals.db.query(
-        "INSERT INTO users (open_id, union_id, nickname, avatar_url, gender) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO users (openid, union_id, nickname, avatar_url, gender) VALUES (?, ?, ?, ?, ?)",
         [
           openid,
           unionid,
@@ -116,7 +116,7 @@ router.post("/wx-login", async (req, res) => {
 
     // 获取完整的用户信息
     const [userData] = await req.app.locals.db.query(
-      "SELECT id, open_id, union_id, nickname, avatar_url, gender, phone FROM users WHERE id = ?",
+      "SELECT id, openid, union_id, nickname, avatar_url, gender, phone FROM users WHERE id = ?",
       [userId]
     );
 
