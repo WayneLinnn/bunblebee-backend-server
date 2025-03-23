@@ -91,13 +91,12 @@ router.post("/wx-login", async (req, res) => {
     if (existingUser.length === 0) {
       // 创建新用户
       const [result] = await req.app.locals.db.query(
-        "INSERT INTO users (openid, union_id, nickname, avatar_url, gender) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO users (openid, nickname, avatar_url, role) VALUES (?, ?, ?, ?)",
         [
           openid,
-          unionid,
           "微信用户",
           "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132",
-          0,
+          "student",
         ]
       );
       userId = result.insertId;
@@ -116,7 +115,7 @@ router.post("/wx-login", async (req, res) => {
 
     // 获取完整的用户信息
     const [userData] = await req.app.locals.db.query(
-      "SELECT id, openid, union_id, nickname, avatar_url, gender, phone FROM users WHERE id = ?",
+      "SELECT id, openid, nickname, avatar_url, phone, role FROM users WHERE id = ?",
       [userId]
     );
 
