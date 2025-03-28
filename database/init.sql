@@ -50,4 +50,18 @@ CREATE TABLE IF NOT EXISTS user_courses (
     PRIMARY KEY (user_id, course_id),
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (course_id) REFERENCES courses(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 创建预订表
+CREATE TABLE reservations (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    field_id INT NOT NULL,
+    reservation_date DATE NOT NULL,  -- 预订日期
+    start_time TIME NOT NULL,  -- 开始时间
+    end_time TIME NOT NULL,  -- 结束时间
+    status ENUM('pending', 'confirmed', 'cancelled', 'locked') DEFAULT 'pending',  -- 预订状态
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (field_id) REFERENCES fields(id)
+); 
