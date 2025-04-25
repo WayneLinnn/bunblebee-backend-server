@@ -173,3 +173,11 @@ CREATE TABLE reservations (
    - **场地预定可以扩展**，如增加多个时段预约，甚至未来在线支付。
 
 这样，你的数据库就能支持 **灵活扩展**，适应未来需求！🚀
+
+-- 插入 5V5 足球场
+INSERT INTO fields (id, name, location, price_per_hour, available_from, available_to)
+VALUES (1, '5V5 足球场', '主场地区域 A', 200.00, '09:00:00', '22:00:00');
+
+-- 插入 8V8 足球场
+INSERT INTO fields (id, name, location, price_per_hour, available_from, available_to)
+VALUES (2, '8V8 足球场', '主场地区域 B', 300.00, '09:00:00', '22:00:00');

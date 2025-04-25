@@ -10,6 +10,7 @@ Page({
   data: {
     isLoggedIn: false,
     userInfo: null,
+    showPhoneButton: false,
   },
 
   /**
@@ -73,6 +74,7 @@ Page({
   },
 
   handleLogin() {
+    // 先获取用户信息
     wx.getUserProfile({
       desc: "用于完善会员资料",
       success: (userInfo) => {
@@ -91,20 +93,39 @@ Page({
               },
               data: {
                 code: res.code,
+                userInfo: {
+                  nickname: userInfo.userInfo.nickName,
+                  avatar_url: userInfo.userInfo.avatarUrl,
+                  role: "student", // 默认角色为学生
+                },
               },
               success: (result) => {
                 console.log("登录成功:", result);
                 if (result.data.success) {
                   // 保存token和用户信息
                   wx.setStorageSync("token", result.data.data.token);
-                  wx.setStorageSync("userInfo", userInfo.userInfo);
+                  wx.setStorageSync("userInfo", {
+                    ...userInfo.userInfo,
+                    role: "student",
+                  });
                   this.setData({
                     isLoggedIn: true,
-                    userInfo: userInfo.userInfo,
+                    userInfo: {
+                      ...userInfo.userInfo,
+                      role: "student",
+                    },
                   });
-                  wx.showToast({
-                    title: "登录成功",
-                    icon: "success",
+
+                  // 登录成功后，请求手机号授权
+                  wx.showModal({
+                    title: "提示",
+                    content: "为了提供更好的服务，需要获取您的手机号",
+                    success: (res) => {
+                      if (res.confirm) {
+                        // 用户点击确定，获取手机号
+                        this.getPhoneNumber();
+                      }
+                    },
                   });
                 } else {
                   wx.showToast({
@@ -141,8 +162,23 @@ Page({
     });
   },
 
-  // 修改为使用button的open-type="getPhoneNumber"来获取手机号
-  getPhoneNumber(e) {
+  // 获取手机号
+  getPhoneNumber() {
+    // 直接显示获取手机号按钮
+    this.setData({
+      showPhoneButton: true,
+    });
+    wx.showToast({
+      title: "请点击绑定手机号按钮",
+      icon: "none",
+      duration: 2000,
+    });
+  },
+
+  // 处理手机号获取结果
+  handleGetPhoneNumber(e) {
+    console.log("手机号获取结果:", e.detail);
+
     if (e.detail.errMsg !== "getPhoneNumber:ok") {
       wx.showToast({
         title: "获取手机号失败",
@@ -159,9 +195,6 @@ Page({
 
     // 调用云托管绑定手机号接口
     wx.cloud.callContainer({
-      config: {
-        env: "prod-4gv7hplz5e8dc437",
-      },
       path: "/user/bind-phone",
       header: {
         "X-WX-SERVICE": "bunblebee-back",
@@ -173,6 +206,7 @@ Page({
         cloudID: e.detail.cloudID,
       },
       success: (result) => {
+        console.log("绑定手机号结果:", result);
         if (result.data.success) {
           // 更新本地存储的用户信息
           const userInfo = wx.getStorageSync("userInfo");
@@ -181,11 +215,17 @@ Page({
 
           this.setData({
             userInfo: userInfo,
+            showPhoneButton: false,
           });
 
           wx.showToast({
             title: "绑定成功",
             icon: "success",
+          });
+        } else {
+          wx.showToast({
+            title: result.data.message || "绑定失败",
+            icon: "none",
           });
         }
       },
@@ -193,7 +233,7 @@ Page({
         console.error("绑定手机号失败:", error);
         wx.showToast({
           title: "绑定失败",
-          icon: "error",
+          icon: "none",
         });
       },
       complete: () => {
@@ -232,7 +272,7 @@ Page({
       return;
     }
     wx.navigateTo({
-      url: "/pages/my-bookings/my-bookings",
+      url: "/pages/my-reservations/my-reservations",
     });
   },
 

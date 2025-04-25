@@ -1,0 +1,119 @@
+<!--pages/my-reservations/my-reservations.wxml-->
+<view class="container">
+  <!-- 返回按钮和标题 -->
+  <view class="header">
+    <view class="back-button" bindtap="navigateBack">
+      <text class="back-icon">←</text>
+      <text>返回</text>
+    </view>
+    <view class="title">我的预订</view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{isLoading}}">
+    <view class="loading-spinner">
+      <view class="loading-dot"></view>
+      <view class="loading-dot"></view>
+      <view class="loading-dot"></view>
+    </view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!isLoading && (!reservations || reservations.length === 0)}}">
+    <text class="empty-text">您还没有预订记录</text>
+    <button class="book-button" bindtap="navigateToBooking">立即预订</button>
+  </view>
+
+  <!-- 预订列表 -->
+  <view class="reservation-container" wx:if="{{!isLoading && reservations && reservations.length > 0}}">
+    <!-- 未来预订 -->
+    <block wx:if="{{hasUpcoming}}">
+      <view class="section-title">即将到来的预订</view>
+      <view class="reservation-list">
+        <view class="reservation-card {{item.isExpired ? 'expired-card' : ''}}" wx:for="{{upcomingReservations}}" wx:key="id" bindtap="navigateToDetail" data-id="{{item.id}}">
+          <view class="reservation-header">
+            <view class="field-info">
+              <text class="field-name">{{item.field_name}}</text>
+              <text class="field-location">{{item.field_location}}</text>
+            </view>
+            <view class="reservation-status {{item.statusClass}}">
+              <text>{{item.statusText}}</text>
+            </view>
+          </view>
+          
+          <view class="reservation-body">
+            <view class="info-row">
+              <text class="info-label">预订日期:</text>
+              <text class="info-value">{{item.reservation_date}}</text>
+            </view>
+            <view class="info-row">
+              <text class="info-label">预订时间:</text>
+              <text class="info-value">{{item.start_time}} - {{item.end_time}}</text>
+            </view>
+            <view class="info-row">
+              <text class="info-label">预订金额:</text>
+              <text class="info-value price">¥{{item.total_price || '0.00'}}</text>
+            </view>
+          </view>
+          
+          <view class="reservation-footer">
+            <text class="book-time">预订时间: {{item.created_at}}</text>
+            <button 
+              class="cancel-button" 
+              wx:if="{{item.canCancel}}"
+              data-id="{{item.id}}"
+              bindtap="handleCancelReservation"
+              catchtap
+            >
+              取消预订
+            </button>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 历史预订 -->
+    <block wx:if="{{hasHistory}}">
+      <view class="section-title history-title">历史预订</view>
+      <view class="reservation-list">
+        <view class="reservation-card {{item.isExpired ? 'expired-card' : ''}}" wx:for="{{historyReservations}}" wx:key="id" bindtap="navigateToDetail" data-id="{{item.id}}">
+          <view class="reservation-header">
+            <view class="field-info">
+              <text class="field-name">{{item.field_name}}</text>
+              <text class="field-location">{{item.field_location}}</text>
+            </view>
+            <view class="reservation-status {{item.statusClass}}">
+              <text>{{item.statusText}}</text>
+            </view>
+          </view>
+          
+          <view class="reservation-body">
+            <view class="info-row">
+              <text class="info-label">预订日期:</text>
+              <text class="info-value">{{item.reservation_date}}</text>
+            </view>
+            <view class="info-row">
+              <text class="info-label">预订时间:</text>
+              <text class="info-value">{{item.start_time}} - {{item.end_time}}</text>
+            </view>
+            <view class="info-row">
+              <text class="info-label">预订金额:</text>
+              <text class="info-value price">¥{{item.total_price || '0.00'}}</text>
+            </view>
+          </view>
+          
+          <view class="reservation-footer">
+            <text class="book-time">预订时间: {{item.created_at}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+  
+  <!-- 新预订按钮 -->
+  <view class="floating-button" bindtap="navigateToBooking">
+    <text class="plus-icon">+</text>
+    <text>新预订</text>
+  </view>
+</view> 

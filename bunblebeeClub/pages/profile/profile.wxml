@@ -15,7 +15,12 @@
       <view class="user-details">
         <text class="nickname">{{userInfo.nickname || '微信用户'}}</text>
         <text class="phone" wx:if="{{userInfo.phone}}">{{userInfo.phone}}</text>
-        <button class="bind-phone" wx:else open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">绑定手机号</button>
+        <button 
+          wx:if="{{showPhoneButton}}" 
+          class="bind-phone" 
+          open-type="getPhoneNumber" 
+          bindgetphonenumber="handleGetPhoneNumber"
+        >绑定手机号</button>
       </view>
     </view>
   </view>

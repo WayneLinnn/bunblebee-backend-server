@@ -1,0 +1,262 @@
+/* pages/reservation-detail/reservation-detail.wxss */
+.container {
+  padding: 20rpx;
+  padding-bottom: 120rpx;
+  background-color: #f7f7f7;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* 自定义导航栏 */
+.header {
+  display: flex;
+  align-items: center;
+  padding: 40rpx 0 20rpx;
+  position: relative;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  font-size: 28rpx;
+  color: #333;
+  position: absolute;
+  left: 0;
+}
+
+.back-icon {
+  font-size: 32rpx;
+  margin-right: 10rpx;
+}
+
+.title {
+  flex: 1;
+  text-align: center;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 加载状态 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 500rpx;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20rpx;
+}
+
+.loading-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background-color: #ffd700;
+  margin: 0 8rpx;
+  animation: loading 1.4s infinite ease-in-out both;
+}
+
+.loading-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes loading {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 预订详情 */
+.reservation-detail {
+  width: 100%;
+}
+
+/* 状态栏 */
+.status-bar {
+  padding: 30rpx;
+  text-align: center;
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.status-bar.status-pending {
+  background-color: #1890ff;
+}
+
+.status-bar.status-confirmed {
+  background-color: #52c41a;
+}
+
+.status-bar.status-cancelled {
+  background-color: #f5222d;
+}
+
+.status-bar.status-expired {
+  background-color: #d9d9d9;
+}
+
+/* 卡片通用样式 */
+.card {
+  margin: 20rpx;
+  background-color: #fff;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  position: relative;
+  padding-left: 20rpx;
+}
+
+.card-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6rpx;
+  width: 6rpx;
+  height: 36rpx;
+  background-color: #ffd700;
+  border-radius: 3rpx;
+}
+
+/* 场地信息 */
+.field-info {
+  padding: 10rpx 0;
+}
+
+.field-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.field-location {
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 预订信息 */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30rpx 20rpx;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 10rpx;
+}
+
+.info-value {
+  font-size: 30rpx;
+  color: #333;
+}
+
+/* 费用信息 */
+.price-info {
+  padding: 10rpx 0;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.price-row.total {
+  margin-top: 30rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx dashed #eee;
+}
+
+.price-label {
+  font-size: 30rpx;
+  color: #333;
+}
+
+.price-value {
+  font-size: 30rpx;
+  color: #ff9500;
+  font-weight: bold;
+}
+
+.price-row.total .price-label,
+.price-row.total .price-value {
+  font-size: 34rpx;
+  font-weight: bold;
+}
+
+/* 底部按钮 */
+.bottom-button-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20rpx;
+  background-color: #fff;
+  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
+
+.cancel-button {
+  background-color: #fff;
+  color: #f5222d;
+  border: 1rpx solid #f5222d;
+  border-radius: 45rpx;
+  font-size: 32rpx;
+}
+
+/* 错误提示 */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 500rpx;
+}
+
+.error-text {
+  font-size: 30rpx;
+  color: #999;
+  margin-bottom: 30rpx;
+}
+
+.back-button {
+  background-color: #ffd700;
+  color: #fff;
+  font-size: 28rpx;
+  padding: 15rpx 40rpx;
+  border-radius: 40rpx;
+}

@@ -6,9 +6,12 @@
     "pages/profile/profile",
     "pages/news/news",
     "pages/coaches/coaches",
-    "pages/field-booking/field-booking",
     "pages/course-detail/course-detail",
-    "pages/achievement-detail/achievement-detail"
+    "pages/achievement-detail/achievement-detail",
+    "pages/field-booking/field-booking",
+    "pages/my-reservations/my-reservations",
+    "pages/reservation-detail/reservation-detail",
+    "pages/admin/reservation-management/reservation-management"
   ],
   "window": {
     "backgroundTextStyle": "light",

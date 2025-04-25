@@ -60,7 +60,8 @@ CREATE TABLE reservations (
     reservation_date DATE NOT NULL,  -- 预订日期
     start_time TIME NOT NULL,  -- 开始时间
     end_time TIME NOT NULL,  -- 结束时间
-    status ENUM('pending', 'confirmed', 'cancelled', 'locked') DEFAULT 'pending',  -- 预订状态
+    status ENUM('pending', 'confirmed', 'cancelled', 'locked', 'completed') DEFAULT 'pending',  -- 预订状态
+    total_price DECIMAL(10,2),  -- 预订总价
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (field_id) REFERENCES fields(id)

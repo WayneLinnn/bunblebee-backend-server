@@ -1,0 +1,47 @@
+<!--pages/create-order/create-order.wxml-->
+<view class="container">
+  <view class="order-card">
+    <view class="card-header">
+      <text class="title">确认预订信息</text>
+    </view>
+    
+    <view class="info-section">
+      <view class="info-item">
+        <text class="label">场地名称</text>
+        <text class="value">{{field.name}}</text>
+      </view>
+      <view class="info-item">
+        <text class="label">场地位置</text>
+        <text class="value">{{field.location}}</text>
+      </view>
+      <view class="info-item">
+        <text class="label">预订日期</text>
+        <text class="value">{{date}}</text>
+      </view>
+      <view class="info-item">
+        <text class="label">预订时间</text>
+        <text class="value">{{startTime}} - {{endTime}}</text>
+      </view>
+      <view class="info-item">
+        <text class="label">时长</text>
+        <text class="value">{{duration}}分钟</text>
+      </view>
+    </view>
+
+    <view class="price-section">
+      <text class="price-label">总价</text>
+      <text class="price-value">¥{{totalPrice}}</text>
+    </view>
+  </view>
+
+  <view class="notice-section">
+    <view class="notice-title">预订须知</view>
+    <view class="notice-item">1. 请提前10分钟到达场地</view>
+    <view class="notice-item">2. 取消预订请提前2小时</view>
+    <view class="notice-item">3. 爱护场地设施，遵守场地规则</view>
+  </view>
+
+  <view class="button-section">
+    <button class="submit-btn" bindtap="handleCreateOrder">确认预订</button>
+  </view>
+</view> 

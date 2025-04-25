@@ -1,1 +1,414 @@
 /* pages/field-booking/field-booking.wxss */
+.container {
+  padding: 20rpx;
+  padding-bottom: 120rpx;
+  box-sizing: border-box;
+  background-color: #f7f7f7;
+  min-height: 100vh;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.back-icon {
+  font-size: 32rpx;
+  margin-right: 10rpx;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #000;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 200rpx;
+  width: 100%;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20rpx;
+}
+
+.loading-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background-color: #ffd700;
+  margin: 0 8rpx;
+  animation: loading 1.4s infinite ease-in-out both;
+}
+
+.loading-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes loading {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.section {
+  margin-bottom: 30rpx;
+  background-color: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  color: #333;
+}
+
+/* 场地选择样式 */
+.field-selector {
+  white-space: nowrap;
+  margin: 0 -20rpx;
+  padding: 0 20rpx;
+}
+
+.field-card {
+  display: inline-block;
+  width: 300rpx;
+  margin-right: 20rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 2rpx solid transparent;
+}
+
+.field-card.active {
+  border-color: #ffd700;
+  box-shadow: 0 2rpx 15rpx rgba(255, 215, 0, 0.3);
+}
+
+.field-info {
+  padding: 16rpx;
+}
+
+.field-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.field-location {
+  font-size: 24rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.field-price {
+  font-size: 26rpx;
+  color: #ff9500;
+  font-weight: bold;
+}
+
+/* 日期选择样式 */
+.date-selector {
+  white-space: nowrap;
+  margin: 0 -20rpx;
+  padding: 0 20rpx;
+}
+
+.date-item {
+  display: inline-block;
+  width: 160rpx;
+  height: 160rpx;
+  margin-right: 20rpx;
+  border-radius: 12rpx;
+  background-color: #f9f9f9;
+  text-align: center;
+  padding: 20rpx 0;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.date-item.active {
+  background-color: #ffd700;
+  box-shadow: 0 2rpx 15rpx rgba(255, 215, 0, 0.3);
+}
+
+.date-item.active .date-label,
+.date-item.active .date-value {
+  color: #fff;
+}
+
+.date-label {
+  font-size: 28rpx;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.date-value {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 时间选择样式 */
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15rpx;
+}
+
+.time-slot {
+  height: 80rpx;
+  border-radius: 8rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f9f9f9;
+  font-size: 26rpx;
+  transition: all 0.2s ease;
+}
+
+.time-slot.selected {
+  background-color: #ffd700;
+  color: #fff;
+}
+
+.time-slot.reserved {
+  background-color: #f0f0f0;
+  color: #bbb;
+  position: relative;
+  overflow: hidden;
+}
+
+.reserved-text {
+  font-size: 24rpx;
+}
+
+/* 预订详情样式 */
+.booking-summary {
+  border-left: 4rpx solid #ffd700;
+}
+
+.summary-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  color: #333;
+}
+
+.summary-detail {
+  padding: 0 10rpx;
+}
+
+.summary-row {
+  display: flex;
+  margin-bottom: 15rpx;
+}
+
+.summary-label {
+  width: 100rpx;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.summary-value {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.summary-value.price {
+  color: #ff9500;
+  font-weight: bold;
+}
+
+/* 底部按钮样式 */
+.bottom-button-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20rpx;
+  background-color: #fff;
+  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
+
+.submit-button {
+  background-color: #ffd700;
+  color: #fff;
+  border-radius: 45rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  padding: 20rpx 0;
+}
+
+.submit-button.disabled {
+  background-color: #f0f0f0;
+  color: #999;
+}
+
+/* 图例样式 */
+.legend {
+  display: flex;
+  justify-content: center;
+  margin-top: 30rpx;
+  margin-bottom: 180rpx;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin: 0 20rpx;
+}
+
+.legend-color {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 4rpx;
+  margin-right: 10rpx;
+}
+
+.legend-color.available {
+  background-color: #f9f9f9;
+  border: 1rpx solid #e0e0e0;
+}
+
+.legend-color.selected {
+  background-color: #ffd700;
+}
+
+.legend-color.reserved {
+  background-color: #f0f0f0;
+}
+
+.legend-text {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 确认预订弹窗样式 */
+.confirmation-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dialog-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.dialog-container {
+  position: relative;
+  width: 80%;
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 40rpx 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+  z-index: 1001;
+}
+
+.dialog-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 30rpx;
+}
+
+.dialog-content {
+  margin-bottom: 40rpx;
+}
+
+.dialog-item {
+  display: flex;
+  margin-bottom: 16rpx;
+}
+
+.dialog-label {
+  width: 120rpx;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.dialog-value {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.dialog-value.price {
+  color: #ff9500;
+  font-weight: bold;
+}
+
+.dialog-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.dialog-button {
+  flex: 1;
+  margin: 0 10rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+}
+
+.dialog-button.cancel {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.dialog-button.confirm {
+  background-color: #ffd700;
+  color: #fff;
+}

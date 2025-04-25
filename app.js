@@ -48,6 +48,9 @@ pool.getConnection((err, connection) => {
 // 将数据库连接池添加到 app.locals
 app.locals.db = pool.promise();
 
+// 将应用程序导出，以便在其他文件中访问
+module.exports = app;
+
 // 导入路由
 const authRoutes = require("./routes/auth");
 const coursesRoutes = require("./routes/courses");

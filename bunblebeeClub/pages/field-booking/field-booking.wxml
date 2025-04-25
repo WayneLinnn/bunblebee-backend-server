@@ -1,2 +1,174 @@
 <!--pages/field-booking/field-booking.wxml-->
-<text>pages/field-booking/field-booking.wxml</text>
+<view class="container">
+  <!-- 返回按钮 -->
+  <view class="back-button" bindtap="navigateBack">
+    <text class="back-icon">←</text>
+    <text>返回</text>
+  </view>
+
+  <!-- 顶部标题 -->
+  <view class="header">
+    <text class="title">场地预订</text>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{isLoading}}">
+    <view class="loading-spinner">
+      <view class="loading-dot"></view>
+      <view class="loading-dot"></view>
+      <view class="loading-dot"></view>
+    </view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 场地选择 -->
+  <view class="section field-section">
+    <view class="section-title">选择场地</view>
+    <scroll-view scroll-x="true" class="field-selector">
+      <view 
+        class="field-card {{selectedField.id === field.id ? 'active' : ''}}" 
+        wx:for="{{fields}}" 
+        wx:for-item="field" 
+        wx:key="id"
+        bindtap="handleFieldSelect"
+        data-field="{{field}}"
+      >
+        <view class="field-info">
+          <text class="field-name">{{field.name}}</text>
+          <text class="field-location">{{field.location}}</text>
+          <text class="field-price">¥{{field.price_per_hour}}/小时</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 日期选择 -->
+  <view class="section date-section">
+    <view class="section-title">选择日期</view>
+    <scroll-view scroll-x="true" class="date-selector">
+      <view 
+        class="date-item {{selectedDate === date.value ? 'active' : ''}}" 
+        wx:for="{{availableDates}}" 
+        wx:for-item="date" 
+        wx:key="value"
+        bindtap="handleDateSelect"
+        data-date="{{date.value}}"
+      >
+        <text class="date-label">{{date.label}}</text>
+        <text class="date-value">{{date.displayValue}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 时间段选择 -->
+  <view class="section time-section">
+    <view class="section-title">选择时间段（30分钟/段）</view>
+    <view class="time-grid">
+      <view 
+        class="time-slot {{selectedTimeSlot === slot.time ? 'selected' : ''}} {{slot.isReserved ? 'reserved' : ''}}" 
+        wx:for="{{timeSlots}}" 
+        wx:for-item="slot" 
+        wx:key="time"
+        bindtap="{{slot.isReserved ? '' : 'handleTimeSelect'}}"
+        data-time="{{slot.time}}"
+      >
+        <block wx:if="{{slot.isReserved}}">
+          <text class="reserved-text">已预订</text>
+        </block>
+        <block wx:else>
+          <text class="time-text">{{slot.time}}</text>
+        </block>
+      </view>
+    </view>
+  </view>
+
+  <!-- 预订详情 -->
+  <view class="section booking-summary" wx:if="{{selectedTimeSlot}}">
+    <view class="summary-title">预订详情</view>
+    <view class="summary-detail">
+      <view class="summary-row">
+        <text class="summary-label">场地:</text>
+        <text class="summary-value">{{selectedField.name}}</text>
+      </view>
+      <view class="summary-row">
+        <text class="summary-label">位置:</text>
+        <text class="summary-value">{{selectedField.location}}</text>
+      </view>
+      <view class="summary-row">
+        <text class="summary-label">日期:</text>
+        <text class="summary-value">{{selectedDate}}</text>
+      </view>
+      <view class="summary-row">
+        <text class="summary-label">时间:</text>
+        <text class="summary-value">{{selectedTimeSlot}} - {{calculateEndTime}}</text>
+      </view>
+      <view class="summary-row">
+        <text class="summary-label">价格:</text>
+        <text class="summary-value price">¥{{totalPrice}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 图例说明 -->
+  <view class="legend">
+    <view class="legend-item">
+      <view class="legend-color available"></view>
+      <text class="legend-text">可预订</text>
+    </view>
+    <view class="legend-item">
+      <view class="legend-color selected"></view>
+      <text class="legend-text">已选择</text>
+    </view>
+    <view class="legend-item">
+      <view class="legend-color reserved"></view>
+      <text class="legend-text">已预订</text>
+    </view>
+  </view>
+
+  <!-- 预订按钮 -->
+  <view class="bottom-button-container">
+    <button 
+      class="submit-button {{!canSubmit ? 'disabled' : ''}}" 
+      disabled="{{!canSubmit}}"
+      bindtap="showConfirmationDialog"
+    >
+      确认预订
+    </button>
+  </view>
+  
+  <!-- 确认预订弹窗 -->
+  <view class="confirmation-dialog" wx:if="{{showConfirmDialog}}">
+    <view class="dialog-mask" bindtap="hideConfirmationDialog"></view>
+    <view class="dialog-container">
+      <view class="dialog-title">确认预订信息</view>
+      
+      <view class="dialog-content">
+        <view class="dialog-item">
+          <text class="dialog-label">场地:</text>
+          <text class="dialog-value">{{selectedField.name}}</text>
+        </view>
+        <view class="dialog-item">
+          <text class="dialog-label">位置:</text>
+          <text class="dialog-value">{{selectedField.location}}</text>
+        </view>
+        <view class="dialog-item">
+          <text class="dialog-label">日期:</text>
+          <text class="dialog-value">{{selectedDate}}</text>
+        </view>
+        <view class="dialog-item">
+          <text class="dialog-label">时间:</text>
+          <text class="dialog-value">{{selectedTimeSlot}} - {{calculateEndTime}}</text>
+        </view>
+        <view class="dialog-item">
+          <text class="dialog-label">价格:</text>
+          <text class="dialog-value price">¥{{totalPrice}}</text>
+        </view>
+      </view>
+      
+      <view class="dialog-buttons">
+        <button class="dialog-button cancel" bindtap="hideConfirmationDialog">取消</button>
+        <button class="dialog-button confirm" bindtap="handleSubmitBooking">确认</button>
+      </view>
+    </view>
+  </view>
+</view>

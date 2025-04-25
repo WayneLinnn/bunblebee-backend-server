@@ -1,0 +1,87 @@
+<!--pages/reservation-detail/reservation-detail.wxml-->
+<view class="container">
+  <!-- 自定义导航栏 -->
+  <view class="header">
+    <view class="back-button" bindtap="navigateBack">
+      <text class="back-icon">←</text>
+      <text>返回</text>
+    </view>
+    <view class="title">预订详情</view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{isLoading}}">
+    <view class="loading-spinner">
+      <view class="loading-dot"></view>
+      <view class="loading-dot"></view>
+      <view class="loading-dot"></view>
+    </view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 预订详情 -->
+  <view class="reservation-detail" wx:if="{{!isLoading && reservation}}">
+    <!-- 状态栏 -->
+    <view class="status-bar {{statusClass}}">
+      <text class="status-text">{{statusText}}</text>
+    </view>
+    
+    <!-- 场地信息 -->
+    <view class="card field-card">
+      <view class="card-title">场地信息</view>
+      <view class="field-info">
+        <view class="field-name">{{reservation.field_name}}</view>
+        <view class="field-location">{{reservation.field_location}}</view>
+      </view>
+    </view>
+    
+    <!-- 预订信息 -->
+    <view class="card booking-card">
+      <view class="card-title">预订信息</view>
+      <view class="info-grid">
+        <view class="info-item">
+          <text class="info-label">预订日期</text>
+          <text class="info-value">{{reservation.reservation_date}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">预订时间</text>
+          <text class="info-value">{{reservation.start_time}} - {{reservation.end_time}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">预订号</text>
+          <text class="info-value">{{reservation.id}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">预订时间</text>
+          <text class="info-value">{{reservation.created_at}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 费用信息 -->
+    <view class="card price-card">
+      <view class="card-title">费用信息</view>
+      <view class="price-info">
+        <view class="price-row">
+          <text class="price-label">场地费用</text>
+          <text class="price-value">¥{{reservation.total_price || '0.00'}}</text>
+        </view>
+        <view class="price-row total">
+          <text class="price-label">应付金额</text>
+          <text class="price-value">¥{{reservation.total_price || '0.00'}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 底部按钮 -->
+    <view class="bottom-button-container" wx:if="{{reservation.canCancel}}">
+      <button class="cancel-button" bindtap="handleCancelReservation">取消预订</button>
+    </view>
+  </view>
+  
+  <!-- 错误提示 -->
+  <view class="error-container" wx:if="{{!isLoading && !reservation}}">
+    <text class="error-text">无法加载预订信息</text>
+    <button class="back-button" bindtap="navigateBack">返回</button>
+  </view>
+</view>
