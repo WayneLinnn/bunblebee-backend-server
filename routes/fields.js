@@ -202,19 +202,19 @@ router.post("/:id/reserve", async (req, res) => {
        AND reservation_date = ? 
        AND status != 'cancelled'
        AND (
-         (start_time <= ? AND end_time > ?) OR
-         (start_time < ? AND end_time >= ?) OR
-         (start_time >= ? AND end_time <= ?)
+         (start_time < ? AND end_time > ?) OR
+         (start_time >= ? AND start_time < ?) OR
+         (? >= start_time AND ? < end_time)
        )`,
       [
         req.params.id,
         reservation_date,
-        end_time,
-        start_time,
-        end_time,
-        start_time,
-        start_time,
-        end_time,
+        end_time, // 正确顺序：新预订的结束时间
+        start_time, // 正确顺序：新预订的开始时间
+        start_time, // 检查新开始时间是否在已有预订区间内
+        end_time, // 检查新开始时间是否在已有预订区间内
+        start_time, // 检查已有开始时间是否在新预订区间内
+        end_time, // 检查已有开始时间是否在新预订区间内
       ]
     );
 
@@ -725,19 +725,19 @@ router.post("/:id/lock", async (req, res) => {
        AND reservation_date = ? 
        AND status IN ('pending', 'confirmed', 'locked')
        AND (
-         (start_time <= ? AND end_time > ?) OR
-         (start_time < ? AND end_time >= ?) OR
-         (start_time >= ? AND end_time <= ?)
+         (start_time < ? AND end_time > ?) OR
+         (start_time >= ? AND start_time < ?) OR
+         (? >= start_time AND ? < end_time)
        )`,
       [
         fieldId,
         reservation_date,
-        end_time,
-        start_time,
-        end_time,
-        start_time,
-        start_time,
-        end_time,
+        end_time, // 正确顺序：新预订的结束时间
+        start_time, // 正确顺序：新预订的开始时间
+        start_time, // 检查新开始时间是否在已有预订区间内
+        end_time, // 检查新开始时间是否在已有预订区间内
+        start_time, // 检查已有开始时间是否在新预订区间内
+        end_time, // 检查已有开始时间是否在新预订区间内
       ]
     );
 
